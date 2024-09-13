@@ -1,0 +1,48 @@
+plugins {
+    id "com.android.application" // Android plugin for application
+    id "org.jetbrains.kotlin.android" version "1.8.0" // Ensure Kotlin plugin version is specified
+    id "com.google.gms.google-services" // Google services for Firebase
+    id "dev.flutter.flutter-gradle-plugin" // Flutter Gradle plugin (must be after Android & Kotlin)
+}
+
+android {
+    namespace = "com.example.chatapp" // Your app's namespace
+    compileSdk = 33 // Update to the latest compile SDK version (33 is the current target)
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8 // Java 8 compatibility
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8" // JVM target for Kotlin compatibility
+    }
+
+    defaultConfig {
+        applicationId "com.example.yourapp" // Your app's package name
+        minSdkVersion 21 // Minimum SDK version (Android 5.0)
+        targetSdkVersion 33 // Target the latest SDK
+        versionCode 1 // Increment for each new version
+        versionName "1.0" // Version name to be displayed
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your release signing configuration here
+            signingConfig signingConfigs.debug // Currently using debug signing for testing
+            minifyEnabled false // Set to true when you're ready to shrink your code
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    ndkVersion "25.0.8775105" // Optional: NDK version (make sure it's installed in SDK Manager)
+}
+
+flutter {
+    source = "../.." // Flutter source location relative to android directory
+}
+
+dependencies {
+    // Add any additional dependencies for your project here
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+}
