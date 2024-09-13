@@ -1,48 +1,46 @@
 plugins {
     id "com.android.application" // Android plugin for application
-    id "org.jetbrains.kotlin.android" version "1.8.0" // Ensure Kotlin plugin version is specified
-    id "com.google.gms.google-services" // Google services for Firebase
+  // Ensure Kotlin plugin version is specified
+    id "com.google.gms.google-services" 
+    id "kotlin-android"// Google services for Firebase
     id "dev.flutter.flutter-gradle-plugin" // Flutter Gradle plugin (must be after Android & Kotlin)
 }
 
-android {
-    namespace = "com.example.chatapp" // Your app's namespace
-    compileSdk = 33 // Update to the latest compile SDK version (33 is the current target)
+android { 
+    namespace = "com.example.chatapp"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8 // Java 8 compatibility
+        sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "1.8" // JVM target for Kotlin compatibility
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
-        applicationId "com.example.yourapp" // Your app's package name
-        minSdkVersion 21 // Minimum SDK version (Android 5.0)
-        targetSdkVersion 33 // Target the latest SDK
-        versionCode 1 // Increment for each new version
-        versionName "1.0" // Version name to be displayed
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.example.chatapp"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = 23
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your release signing configuration here
-            signingConfig signingConfigs.debug // Currently using debug signing for testing
-            minifyEnabled false // Set to true when you're ready to shrink your code
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.debug
         }
     }
-
-    ndkVersion "25.0.8775105" // Optional: NDK version (make sure it's installed in SDK Manager)
 }
 
 flutter {
-    source = "../.." // Flutter source location relative to android directory
+    source = "../.."
 }
 
-dependencies {
-    // Add any additional dependencies for your project here
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
-}
