@@ -1,3 +1,4 @@
+import 'package:chatapp/Services/navigation_services.dart';
 import 'package:chatapp/auth/auth_services.dart';
 import 'package:chatapp/consts.dart';
 import 'package:chatapp/widgets/custom_form_field.dart';
@@ -14,6 +15,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GetIt getIt = GetIt.instance;
   final GlobalKey _loginKey = GlobalKey<FormState>();
+  late NavigationService _navigationService;
 
   late AuthServices _authServices;
 
@@ -23,6 +25,7 @@ class _LoginState extends State<Login> {
   void initState() {
   super.initState();
   _authServices = GetIt.instance<AuthServices>();
+  _navigationService = getIt.get<NavigationService>();
 }
 
   @override
@@ -120,11 +123,9 @@ class _LoginState extends State<Login> {
             (_loginKey.currentState as FormState?)?.save();
 
             bool result = await _authServices.login(email!, password!);
-            print(
-              'true'
-            );
+           
             if(result){
-
+              _navigationService.pushNamed("/Homepage");
             }else {
 
             }
