@@ -1,11 +1,17 @@
+// ignore_for_file: dead_code
+
 import 'dart:io';
+import 'package:chatapp/Services/alert_services.dart';
+import 'package:chatapp/Services/database_service.dart';
 import 'package:chatapp/Services/navigation_services.dart';
 import 'package:chatapp/auth/auth_services.dart';
 import 'package:chatapp/consts.dart';
+import 'package:chatapp/models/user_profile.dart';
 import 'package:chatapp/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../Services/media_services.dart';
+import '../Services/storage_services.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,12 +21,16 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>(); // Correct key type
+  final GlobalKey<FormState> _registerFormKey =
+      GlobalKey<FormState>(); // Correct key type
 
   final GetIt getit = GetIt.instance;
   late MediaServices _mediaServices;
   late NavigationService _navigationService;
   late AuthServices _authServices;
+  late StorageServices _storageServices;
+  late DatabaseService _databaseService;
+  late AlertServices _alertServices;
 
   String? name, email, password;
   File? selectedImage;
@@ -32,6 +42,9 @@ class _RegisterPageState extends State<RegisterPage> {
     _mediaServices = getit.get<MediaServices>();
     _navigationService = getit.get<NavigationService>();
     _authServices = getit.get<AuthServices>();
+    _storageServices = getit.get<StorageServices>();
+    _databaseService = getit.get<DatabaseService>();
+    _alertServices = getit.get<AlertServices>();
   }
 
   @override
@@ -99,27 +112,24 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             _pfpSelectionField(),
             CustomFormField(
-              hinttext: "Name",
-              validationReGEx: NAME_VALIDATION_REGEX,
-              onSaved: (value) {
-                name = value;
-              }
-            ),
+                hinttext: "Name",
+                validationReGEx: NAME_VALIDATION_REGEX,
+                onSaved: (value) {
+                  name = value;
+                }),
             CustomFormField(
-              hinttext: "Email",
-              validationReGEx: EMAIL_VALIDATION_REGEX,
-              onSaved: (value) {
-                email = value;  // Corrected from 'name'
-              }
-            ),
+                hinttext: "Email",
+                validationReGEx: EMAIL_VALIDATION_REGEX,
+                onSaved: (value) {
+                  email = value; // Corrected from 'name'
+                }),
             CustomFormField(
-              hinttext: "Password",
-              validationReGEx: PASSWORD_VALIDATION_REGEX,
-              obscureText: true,
-              onSaved: (value) {
-                password = value;  // Corrected from 'name'
-              }
-            ),
+                hinttext: "Password",
+                validationReGEx: PASSWORD_VALIDATION_REGEX,
+                obscureText: true,
+                onSaved: (value) {
+                  password = value; // Corrected from 'name'
+                }),
             _registerButton(),
           ],
         ),
@@ -156,19 +166,40 @@ class _RegisterPageState extends State<RegisterPage> {
               isLoading = true;
             });
 
-            if ((_registerFormKey.currentState as FormState?)?.validate() ?? false && selectedImage != null) {
-              (_registerFormKey.currentState as FormState?)?.save();
+            try {
+              if ((_registerFormKey.currentState)?.validate() ??
+                  false && selectedImage != null) {
+                (_registerFormKey.currentState)?.save();
 
-              bool result = await _authServices.signup(email!, password!);
-              if (result) {
-                // Navigate to homepage or do something after successful registration
-                _navigationService.pushNamedReplacement("/login");
+                bool result = await _authServices.signup(email!, password!);
+                if (result) {
+                  String? pfpURL = await _storageServices.uploadUserPfp(
+                      file: selectedImage!, uid: (_authServices.user!())!.uid);
+                
+                  if (pfpURL != null) {
+                    await _databaseService.createUserProfile(
+                        userProfile: UserProfile(
+                            uid: (_authServices.user!())!.uid,
+                            name: name,
+                            pfpURL: pfpURL));
+                            _alertServices.showToast(text: "You are registered successfully!" , icon: Icons.check);
+                            _navigationService.goBack();
+                            _navigationService.
+                            pushNamedReplacement("/Homepage");
+                  }
+                  
+                  else{
+                   throw Exception("Unable to upload user profile picture"); 
+                  }
+                }else{
+ throw Exception("Unable to register user");
+                }
+
               }
-            } else {
-              // Handle form validation or image selection errors
-              print('Please fill all the fields and select a profile image.');
+            } catch (e) {
+              print(e);
+               _alertServices.showToast(text: "Failed to Register, Please try again !" , icon: Icons.error);
             }
-
             setState(() {
               isLoading = false;
             });
@@ -202,4 +233,3 @@ class _RegisterPageState extends State<RegisterPage> {
     ));
   }
 }
-
