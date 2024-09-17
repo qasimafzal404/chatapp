@@ -1,4 +1,7 @@
+import 'package:chatapp/Services/navigation_services.dart';
+import 'package:chatapp/auth/auth_services.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -8,6 +11,10 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  final GetIt getit = GetIt.instance;
+
+  late AuthServices _authServices;
+  late NavigationService _navigationService;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
