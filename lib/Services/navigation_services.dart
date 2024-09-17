@@ -1,5 +1,6 @@
 import 'package:chatapp/pages/homepage.dart';
 import 'package:chatapp/pages/login.dart';
+import 'package:chatapp/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
 class NavigationService {
@@ -7,6 +8,7 @@ class NavigationService {
 
   final Map<String, Widget Function(BuildContext)> _routes = {
     "/login": (context) => Login(),
+    "/register": (context) => RegisterPage(),
      "/Homepage": (context) => Homepage(),
   };
 
@@ -19,14 +21,14 @@ class NavigationService {
   }
 
   void pushNamed(String routeName){
-    _navigatorKey.currentState!.pushNamed(routeName);
+    _navigatorKey.currentState?.pushNamed(routeName);
   }
 
   void pushNamedReplacement (String routeName){
-    _navigatorKey.currentState!.pushReplacementNamed(routeName);
+    _navigatorKey.currentState?.pushReplacementNamed(routeName);
   }
 
   void goBack(){
-    _navigatorKey.currentState!.pop();
+    _navigatorKey.currentState?.pop();
   }
 }

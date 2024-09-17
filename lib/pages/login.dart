@@ -1,3 +1,4 @@
+import 'package:chatapp/Services/alert_services.dart';
 import 'package:chatapp/Services/navigation_services.dart';
 import 'package:chatapp/auth/auth_services.dart';
 import 'package:chatapp/consts.dart';
@@ -16,9 +17,8 @@ class _LoginState extends State<Login> {
   final GetIt getIt = GetIt.instance;
   final GlobalKey _loginKey = GlobalKey<FormState>();
   late NavigationService _navigationService;
-
   late AuthServices _authServices;
-
+  late AlertServices _alertservices;
   String? email,password;
 
 @override
@@ -26,6 +26,7 @@ class _LoginState extends State<Login> {
   super.initState();
   _authServices = GetIt.instance<AuthServices>();
   _navigationService = getIt.get<NavigationService>();
+  _alertservices = getIt.get<AlertServices>();
 }
 
   @override
@@ -125,9 +126,9 @@ class _LoginState extends State<Login> {
             bool result = await _authServices.login(email!, password!);
            
             if(result){
-              _navigationService.pushNamed("/Homepage");
+              _navigationService.pushNamedReplacement("/Homepage");
             }else {
-
+              _alertservices.showToast(text: "Login Failed , Please try again !" , icon: Icons.error);
             }
 
 
@@ -152,9 +153,12 @@ class _LoginState extends State<Login> {
           "Don't have an account?",
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
-        Text(
-          "Signup",
-          style: TextStyle(color: Theme.of(context).primaryColor),
+        GestureDetector(
+          onTap: () => _navigationService.pushNamed("/register"),
+          child: Text(
+            "Signup",
+            style: TextStyle(color: Theme.of(context).primaryColor),
+          ),
         ),
       ],
     ));

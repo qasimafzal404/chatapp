@@ -1,3 +1,5 @@
+import 'package:chatapp/Services/alert_services.dart';
+import 'package:chatapp/Services/media_services.dart';
 import 'package:chatapp/Services/navigation_services.dart';
 import 'package:chatapp/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,4 +18,6 @@ Future<void> registerServices() async {
   final getIt = GetIt.instance;
   getIt.registerSingleton<AuthServices>(AuthServices());
  getIt.registerSingleton<NavigationService>(NavigationService());
+ getIt.registerSingleton<AlertServices>(AlertServices());
+  getIt.registerSingleton<MediaServices>(MediaServices());
 }
