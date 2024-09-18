@@ -175,30 +175,30 @@ class _RegisterPageState extends State<RegisterPage> {
                 if (result) {
                   String? pfpURL = await _storageServices.uploadUserPfp(
                       file: selectedImage!, uid: (_authServices.user!())!.uid);
-                
+
                   if (pfpURL != null) {
                     await _databaseService.createUserProfile(
                         userProfile: UserProfile(
                             uid: (_authServices.user!())!.uid,
                             name: name,
                             pfpURL: pfpURL));
-                            _alertServices.showToast(text: "You are registered successfully!" , icon: Icons.check);
-                            _navigationService.goBack();
-                            _navigationService.
-                            pushNamedReplacement("/Homepage");
+                    _alertServices.showToast(
+                        text: "You are registered successfully!",
+                        icon: Icons.check);
+                    _navigationService.goBack();
+                    _navigationService.pushNamedReplacement("/Homepage");
+                  } else {
+                    throw Exception("Unable to upload user profile picture");
                   }
-                  
-                  else{
-                   throw Exception("Unable to upload user profile picture"); 
-                  }
-                }else{
- throw Exception("Unable to register user");
+                } else {
+                  throw Exception("Unable to register user");
                 }
-
               }
             } catch (e) {
               print(e);
-               _alertServices.showToast(text: "Failed to Register, Please try again !" , icon: Icons.error);
+              _alertServices.showToast(
+                  text: "Failed to Register, Please try again !",
+                  icon: Icons.error);
             }
             setState(() {
               isLoading = false;
