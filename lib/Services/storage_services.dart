@@ -14,7 +14,7 @@ class StorageServices {
     required String uid,
   }) async {
     try {
-      // Create a reference to the file location in Firebase Storage
+      // Create a reference to the  file location in Firebase Storage
       Reference fileRef = _firebaseStorage
           .ref('users/pfp')
           .child('$uid${p.extension(file.path)}');

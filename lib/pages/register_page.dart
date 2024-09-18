@@ -151,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
         radius: MediaQuery.of(context).size.width * 0.15,
         backgroundImage: selectedImage != null
             ? FileImage(selectedImage!)
-            : NetworkImage(PLACEHOLDER_PFP) as ImageProvider,
+            : const NetworkImage(PLACEHOLDER_PFP) as ImageProvider,
       ),
     );
   }
@@ -174,12 +174,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 bool result = await _authServices.signup(email!, password!);
                 if (result) {
                   String? pfpURL = await _storageServices.uploadUserPfp(
-                      file: selectedImage!, uid: (_authServices.user!())!.uid);
+                      file: selectedImage!, uid: (_authServices.user())!.uid);
 
                   if (pfpURL != null) {
                     await _databaseService.createUserProfile(
                         userProfile: UserProfile(
-                            uid: (_authServices.user!())!.uid,
+                            uid: (_authServices.user())!.uid,
                             name: name,
                             pfpURL: pfpURL));
                     _alertServices.showToast(
