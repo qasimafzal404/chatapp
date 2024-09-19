@@ -18,7 +18,7 @@ class UserProfile {
 
   // Convert a UserProfile object to JSON
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{}; // Corrected syntax
+    final Map<String, dynamic> data = <String, dynamic>{}; 
     data['uid'] = uid;
     data['name'] = name;
     data['pfpURL'] = pfpURL;
