@@ -1,5 +1,6 @@
 import 'package:chatapp/auth/auth_services.dart';
 import 'package:chatapp/models/chat.dart';
+import 'package:chatapp/models/message.dart';
 import 'package:chatapp/models/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
@@ -27,12 +28,12 @@ class DatabaseService {
                 UserProfile.fromJson(snapshots.data()!),
             toFirestore: (userProfile, _) => userProfile.toJson());
 
-  chatCollection = _firebaseFirestore
-        .collection('chats')
-        .withConverter<Chat>(
-            fromFirestore: (snapshots, _) =>
-                Chat.fromJson(snapshots.data()!),
-                toFirestore: (chat, _) => chat.toJson());
+ chatCollection = _firebaseFirestore
+    .collection('chats')
+    .withConverter<Chat>(
+        fromFirestore: (snapshots, _) => Chat.fromJson(snapshots.data()!),
+        toFirestore: (chat, _) => chat.toJson());
+
   }
 
   Future<void> createUserProfile({required UserProfile userProfile}) async {
@@ -66,4 +67,26 @@ class DatabaseService {
     );
     await docRef.set(chat);
   }
+Future<void> sendChatMessage(String uid1, String uid2, Message message) async {
+  String chatID = generateChatID(uid1: uid1, uid2: uid2);
+  final docRef = chatCollection!.doc(chatID);
+  
+  try {
+    // Attempt to update the messages array with the new message
+    await docRef.update({
+      "messages": FieldValue.arrayUnion([message.toJson()])
+    });
+    print('Message sent successfully');
+  } catch (e) {
+    // Catch errors and print them for debugging
+    print('Failed to send message: $e');
+  }
+}
+
+
+Stream getChatData(String uid1 , String uid2){
+   String chatID = generateChatID(uid1: uid1 , uid2: uid2);
+   return chatCollection?.doc(chatID).snapshots() as Stream<DocumentSnapshot<Chat>>;
+}
+
 }

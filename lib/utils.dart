@@ -9,6 +9,8 @@ import 'package:get_it/get_it.dart';
 import 'package:chatapp/auth/auth_services.dart';
 
 // Initialize Firebase using the platform-specific options
+
+
 Future<void> setupFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

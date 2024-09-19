@@ -3,6 +3,7 @@ import 'package:chatapp/Services/database_service.dart';
 import 'package:chatapp/Services/navigation_services.dart';
 import 'package:chatapp/auth/auth_services.dart';
 import 'package:chatapp/models/user_profile.dart';
+import 'package:chatapp/pages/chat_page.dart';
 import 'package:chatapp/widgets/chat_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -91,9 +92,9 @@ class _HomepageState extends State<Homepage> {
                   return Padding(padding: const EdgeInsets.symmetric(vertical: 10.0), child: ChatTile(userProfile: user, onTap: () async {
                     final chatExist =await _databaseService.checkChatExists(_authServices.user()!.uid, user.uid!);
                   if(!chatExist){
-                    await _databaseService.checkChatExists(_authServices.user()!.uid, user.uid!);
+                    await _databaseService.createNewChat(_authServices.user()!.uid, user.uid!);
                   }
-
+                _navigationService.push(MaterialPageRoute(builder:(context) => ChatPage(chatuser: user)));
                   }));
                 });
           }

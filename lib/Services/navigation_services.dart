@@ -3,6 +3,7 @@ import 'package:chatapp/pages/login.dart';
 import 'package:chatapp/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
+
 class NavigationService {
   late GlobalKey<NavigatorState> _navigatorKey;
 
@@ -18,6 +19,9 @@ class NavigationService {
 
   NavigationService() {
     _navigatorKey = GlobalKey<NavigatorState>();
+  }
+  void push(MaterialPageRoute route){
+    _navigatorKey.currentState?.push(route);
   }
 
   void pushNamed(String routeName){

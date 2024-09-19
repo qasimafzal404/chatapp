@@ -15,6 +15,7 @@ class Message {
     required this.sentAt,
   });
 
+  // Deserialize from JSON
   Message.fromJson(Map<String, dynamic> json) {
     senderID = json['senderID'];
     content = json['content'];
@@ -22,12 +23,14 @@ class Message {
     messageType = MessageType.values.byName(json['messageType']);
   }
 
+  // Serialize to JSON
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{}; 
-    data['senderID'] = senderID;
-    data['content'] = content;
-    data['sentAt'] = sentAt;
-    data['messageType'] = messageType!.name;
-    return data;
+    return {
+      'senderID': senderID,
+      'content': content,
+      'sentAt': sentAt,
+      'messageType': messageType?.name, // Use null-aware operator to handle nullable values
+    };
   }
 }
+
