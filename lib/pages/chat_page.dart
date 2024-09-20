@@ -49,9 +49,15 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.chatuser.name!),
-      ),
+    appBar: AppBar(
+  backgroundColor:Color.fromARGB(255, 43, 162, 198), // Customize AppBar color
+  title: Text(
+    widget.chatuser.name!,
+    style: const TextStyle(fontSize: 18, color: Colors.white),
+  ),
+  
+),
+
       body: _buildUI(),
     );
   }
@@ -87,80 +93,104 @@ class _ChatPageState extends State<ChatPage> {
           showOtherUsersAvatar: true,
           showTime: true,
         ),
-        inputOptions:  InputOptions(
-          alwaysShowSend: true,
-          trailing: [
-            _mediaMessageButton(),
-          ]
-        ),
-        currentUser: currentUser!,
-        onSend: (message) {
-          sendMessage(message); // Call sendMessage on user input
-        },
-        messages: messages,
-      );
-    },
-  );
-}
-
-  Future<void>sendMessage(ChatMessage ChatMessage) async{
-    if(ChatMessage.medias?.isNotEmpty ?? false){
-      if(ChatMessage.medias!.first.type == MediaType.image){
-        Message message = Message(
-          senderID: ChatMessage.user.id,
-          content: ChatMessage.medias?.first.url,
-          messageType: MessageType.Image,
-          sentAt: Timestamp.fromDate(ChatMessage.createdAt),
-
+            inputOptions: InputOptions(
+            inputDecoration: InputDecoration(
+              hintText: "Type a message...",
+              contentPadding: EdgeInsets.all(12),  // Customized padding for the input field
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),  // Rounded input field
+              ),
+            ),
+            sendButtonBuilder: (Function() sendMessage) => IconButton(
+              icon: Icon(Icons.send, color: Color.fromARGB(255, 43, 162, 198),),  // Updated send button color
+              onPressed: sendMessage,
+            ),
+            trailing: [
+              _mediaMessageButton(),
+            ],
+            alwaysShowSend: true,
+          ),
+          currentUser: currentUser!,
+          onSend: (message) {
+            sendMessage(message);
+          },
+          messages: messages,
         );
-        await _databaseService.sendChatMessage(currentUser!.id, otherUser!.id, message);
-      }
-    }else{
- Message message = Message(
-      senderID: currentUser!.id,
-      content: ChatMessage.text,
-      messageType: MessageType.Text,
-      sentAt:Timestamp.fromDate(ChatMessage.createdAt),
+      },
     );
-    await _databaseService.sendChatMessage(currentUser!.id, otherUser!.id, message, );
-    }  
   }
-List<ChatMessage> _generateChatMessagesList(List<Message> messages) {
-  List<ChatMessage> chatMessages = messages.map((m) {
-    if (m.messageType == MessageType.Image) {
-      return ChatMessage(
-       user: m.senderID == currentUser!.id ? currentUser! : otherUser! , createdAt: m.sentAt!.toDate(),
-       medias: [
-        ChatMedia(url: m.content!, fileName: "", type: MediaType.image),
-       ]
 
+  Future<void> sendMessage(ChatMessage chatMessage) async {
+    if (chatMessage.medias?.isNotEmpty ?? false) {
+      if (chatMessage.medias!.first.type == MediaType.image) {
+        Message message = Message(
+          senderID: chatMessage.user.id,
+          content: chatMessage.medias?.first.url,
+          messageType: MessageType.Image,
+          sentAt: Timestamp.fromDate(chatMessage.createdAt),
+        );
+        await _databaseService.sendChatMessage(
+            currentUser!.id, otherUser!.id, message);
+      }
+    } else {
+      Message message = Message(
+        senderID: currentUser!.id,
+        content: chatMessage.text,
+        messageType: MessageType.Text,
+        sentAt: Timestamp.fromDate(chatMessage.createdAt),
       );
-    }else{
- return ChatMessage(user: m.senderID == currentUser!.id ? currentUser! : otherUser! ,
-        text: m.content!, createdAt: m.sentAt!.toDate());
+      await _databaseService.sendChatMessage(
+          currentUser!.id, otherUser!.id, message);
     }
-   
-  }).toList();
-  chatMessages.sort((a,b){
-    return b.createdAt!.compareTo(a.createdAt!);
-  });
-  return chatMessages;
-}
-Widget _mediaMessageButton(){
-  return IconButton(onPressed: () async{
-   File? file = await _mediaServices.getImageFromGallery();
-   if(file != null){
-      String chatID = generateChatID(uid1: currentUser!.id, uid2: otherUser!.id);
-   String? downloadURL = await _storageServices.uploadImageToChat(file: file, chatID: chatID);
-  if (downloadURL != null){
-    ChatMessage chatMessage = ChatMessage(
-      user: currentUser!, createdAt: DateTime.now(), medias:[
-        ChatMedia(url: downloadURL, fileName: "", type: MediaType.image)
-      ]
-    );
-   sendMessage(chatMessage);
   }
-   }
-  }, icon:Icon(Icons.image , color: Theme.of(context).colorScheme.primary,),);
-}
+
+ List<ChatMessage> _generateChatMessagesList(List<Message> messages) {
+    List<ChatMessage> chatMessages = messages.map((m) {
+      if (m.messageType == MessageType.Image) {
+        return ChatMessage(
+          user: m.senderID == currentUser!.id ? currentUser! : otherUser!,
+          createdAt: m.sentAt!.toDate(),
+          medias: [
+            ChatMedia(url: m.content!, fileName: "", type: MediaType.image),
+          ],
+        );
+      } else {
+        return ChatMessage(
+          user: m.senderID == currentUser!.id ? currentUser! : otherUser!,
+          text: m.content!,
+          createdAt: m.sentAt!.toDate(),
+        );
+      }
+    }).toList();
+
+    chatMessages.sort((a, b) {
+      return b.createdAt!.compareTo(a.createdAt!);
+    });
+
+    return chatMessages;
+  }
+
+  Widget _mediaMessageButton() {
+    return IconButton(
+      icon: Icon(Icons.image, color: Color.fromARGB(255, 43, 162, 198),), // Updated media icon color
+      onPressed: () async {
+        File? file = await _mediaServices.getImageFromGallery();
+        if (file != null) {
+          String chatID = generateChatID(uid1: currentUser!.id, uid2: otherUser!.id);
+          String? downloadURL =
+              await _storageServices.uploadImageToChat(file: file, chatID: chatID);
+          if (downloadURL != null) {
+            ChatMessage chatMessage = ChatMessage(
+              user: currentUser!,
+              createdAt: DateTime.now(),
+              medias: [
+                ChatMedia(url: downloadURL, fileName: "", type: MediaType.image),
+              ],
+            );
+            sendMessage(chatMessage);
+          }
+        }
+      },
+    );
+  }
 }
