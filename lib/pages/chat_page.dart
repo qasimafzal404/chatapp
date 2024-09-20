@@ -106,6 +106,9 @@ List<ChatMessage> _generateChatMessagesList(List<Message> messages) {
     return ChatMessage(user: m.senderID == currentUser!.id ? currentUser! : otherUser! ,
         text: m.content!, createdAt: m.sentAt!.toDate());
   }).toList();
+  chatMessages.sort((a,b){
+    return b.createdAt!.compareTo(a.createdAt!);
+  });
   return chatMessages;
 }
 }
